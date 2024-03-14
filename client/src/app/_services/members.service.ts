@@ -24,10 +24,18 @@ export class MembersService {
   }
 
   getMember(username: string) {
+    const member = this.members.find(x => x.userName === username);
+    console.log("*** MEMBER::" + member);
+    if (member) return of(member);
     return this.http.get<Member>(this.baseUrl + 'users/' + username);
   }
 
   updateMember(member: Member) {
-    return this.http.put(this.baseUrl + 'users', member);
+    return this.http.put(this.baseUrl + 'users', member).pipe(
+      map(() => {
+        const index = this.members.indexOf(member);
+        this.members[index] = {...this.members[index], ...member};
+      })
+    );
   }
 }
